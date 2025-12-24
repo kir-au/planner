@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@headlessui/react": "^1.7.15",
+    "@headlessui/tailwindcss": "^0.2.2",
     "@heroicons/react": "^2.0.18",
     "@planetscale/database": "^1.7.0",
     "@tremor/react": "^3.2.6",
