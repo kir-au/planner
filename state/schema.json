@@ -1,0 +1,93 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": [
+    "user",
+    "year",
+    "goals_2026",
+    "constraints",
+    "current_week"
+  ],
+  "properties": {
+    "user": {
+      "type": "object",
+      "required": [
+        "timezone",
+        "notify_time"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "timezone": {
+          "type": "string"
+        },
+        "notify_time": {
+          "type": "string"
+        }
+      }
+    },
+    "year": {
+      "type": "integer"
+    },
+    "goals_2026": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "area",
+          "goal"
+        ],
+        "properties": {
+          "area": {
+            "type": "string"
+          },
+          "goal": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "constraints": {
+      "type": "object",
+      "properties": {
+        "max_actions_per_day": {
+          "type": "integer"
+        },
+        "no_daily_planning": {
+          "type": "boolean"
+        },
+        "weekly_direction_stable_days": {
+          "type": "integer"
+        }
+      }
+    },
+    "current_week": {
+      "type": "object",
+      "required": [
+        "week_start_local",
+        "theme",
+        "default_action",
+        "timebox_minutes",
+        "default_time_local"
+      ],
+      "properties": {
+        "week_start_local": {
+          "type": "string"
+        },
+        "theme": {
+          "type": "string"
+        },
+        "default_action": {
+          "type": "string"
+        },
+        "timebox_minutes": {
+          "type": "integer"
+        },
+        "default_time_local": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

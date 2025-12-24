@@ -1,0 +1,34 @@
+{
+  "user": {
+    "name": "Kirill",
+    "timezone": "Australia/Sydney",
+    "notify_time": "08:00"
+  },
+  "year": 2026,
+  "goals_2026": [
+    {
+      "area": "Health & energy",
+      "goal": "Stabilise energy and recovery; reduce alcohol-driven slips; build sustainable routines"
+    },
+    {
+      "area": "Work & business",
+      "goal": "Build and monetise an AI orchestration/router stack; ship a minimal product"
+    },
+    {
+      "area": "Life systems",
+      "goal": "Reduce decision fatigue with weekly direction + one daily default"
+    }
+  ],
+  "constraints": {
+    "max_actions_per_day": 1,
+    "no_daily_planning": true,
+    "weekly_direction_stable_days": 7
+  },
+  "current_week": {
+    "week_start_local": "2026-01-05T00:00:00+11:00",
+    "theme": "Build AI router",
+    "default_action": "Work on orchestration stack",
+    "timebox_minutes": 30,
+    "default_time_local": "09:00"
+  }
+}
