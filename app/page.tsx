@@ -1,11 +1,5 @@
-'use client';
+import { redirect } from "next/navigation";
 
-import Calendar from "./calendar";
-
-export default function LandingPage() {
-  return (
-    <main className="p-4 md:p-10 mx-auto max-w-7xl">
-      <Calendar />
-    </main>
-  );
+export default function Home() {
+  redirect("/planner");
 }

@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation";
+
 export default function EventsPage() {
-    return null; // Placeholder for removed page
+    redirect("/planner");
 }

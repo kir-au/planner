@@ -1,5 +1,5 @@
-'use client';
+import { redirect } from "next/navigation";
 
-export default function CommunitiesPage() {
-  return null; // Placeholder for removed page
+export default function Page() {
+  redirect("/planner");
 }
