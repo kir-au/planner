@@ -5,7 +5,7 @@
     "notify_time": "08:00"
   },
   "year": 2026,
-  "goals_2026": [
+  "yearly_goals": [
     {
       "area": "Health & energy",
       "goal": "Stabilise energy and recovery; reduce alcohol-driven slips; build sustainable routines"
@@ -19,6 +19,22 @@
       "goal": "Reduce decision fatigue with weekly direction + one daily default"
     }
   ],
+  "monthly_goals": {
+    "2026-01": "Kickstart AI router project",
+    "2026-02": "Refine routines and workflows"
+  },
+  "weekly_goals": {
+    "2026-W01": "Define project scope",
+    "2026-W02": "Set up development environment"
+  },
+  "daily_tasks": {
+    "2026-01-05": [
+      "Research AI orchestration"
+    ],
+    "2026-01-06": [
+      "Draft initial architecture"
+    ]
+  },
   "constraints": {
     "max_actions_per_day": 1,
     "no_daily_planning": true,
