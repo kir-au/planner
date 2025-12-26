@@ -5,46 +5,114 @@
     "notify_time": "08:00"
   },
   "year": 2026,
-  "yearly_goals": [
-    {
-      "area": "Health & energy",
-      "goal": "Stabilise energy and recovery; reduce alcohol-driven slips; build sustainable routines"
-    },
-    {
-      "area": "Work & business",
-      "goal": "Build and monetise an AI orchestration/router stack; ship a minimal product"
-    },
-    {
-      "area": "Life systems",
-      "goal": "Reduce decision fatigue with weekly direction + one daily default"
-    }
-  ],
-  "monthly_goals": {
-    "2026-01": "Kickstart AI router project",
-    "2026-02": "Refine routines and workflows"
-  },
-  "weekly_goals": {
-    "2026-W01": "Define project scope",
-    "2026-W02": "Set up development environment"
-  },
-  "daily_tasks": {
-    "2026-01-05": [
-      "Research AI orchestration"
+  "goals": {
+    "yearly": [
+      "Build a personal execution system",
+      "Ship planner product MVP",
+      "Stabilize focus, reduce cognitive overload"
     ],
-    "2026-01-06": [
-      "Draft initial architecture"
+    "monthly": {
+      "title": "January 2026 — Foundation & Execution",
+      "theme": "One system, one action per day"
+    },
+    "weekly": {
+      "title": "Week 1 — Planner MVP",
+      "defaultAction": "Work on planner for 30 minutes"
+    },
+    "daily": [
+      {
+        "date": "2026-01-01",
+        "title": "Set up planner skeleton",
+        "action": "Open repo, verify calendar + plan.json wiring",
+        "durationMinutes": 30
+      },
+      {
+        "date": "2026-01-02",
+        "title": "Daily execution loop",
+        "action": "Refine daily task rendering",
+        "durationMinutes": 30
+      }
     ]
   },
-  "constraints": {
-    "max_actions_per_day": 1,
-    "no_daily_planning": true,
-    "weekly_direction_stable_days": 7
-  },
-  "current_week": {
-    "week_start_local": "2026-01-05T00:00:00+11:00",
-    "theme": "Build AI router",
-    "default_action": "Work on orchestration stack",
-    "timebox_minutes": 30,
-    "default_time_local": "09:00"
-  }
+  "events": [
+    {
+      "title": "Planner focus block",
+      "start": "2026-01-01T09:00:00",
+      "end": "2026-01-01T09:30:00"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "H-JAN-01",
+      "category": "Health",
+      "title": "Start 4HB Experiment: Dry Jan + 30g protein breakfast",
+      "start": "2025-01-01",
+      "end": "2025-01-31",
+      "status": "Not Started",
+      "description": "Log data daily in tracker. Success: ≥26 dry days."
+    },
+    {
+      "id": "H-JAN-02",
+      "category": "Health",
+      "title": "Japan Ski Prep: Test knee brace, pack meds",
+      "start": "2025-01-20",
+      "end": "2025-01-24",
+      "status": "Not Started",
+      "description": "Pack list complete, pain management plan set."
+    },
+    {
+      "id": "T-JAN-01",
+      "category": "Travel",
+      "title": "Japan Trip: Ski & observe body response",
+      "start": "2025-01-25",
+      "end": "2025-02-02",
+      "status": "Not Started",
+      "description": "Goal: Ski 3 days with pain <5/10. Track sleep."
+    },
+    {
+      "id": "B-JAN-01",
+      "category": "Business",
+      "title": "Research cloud AI orchestration tools (AWS Step Functions vs. Prefect)",
+      "start": "2025-01-06",
+      "end": "2025-01-10",
+      "status": "Not Started",
+      "description": "Document pros/cons. Choose one for POC."
+    },
+    {
+      "id": "H-FEB-01",
+      "category": "Health",
+      "title": "Post-Japan Analysis: Adjust protocol based on data",
+      "start": "2025-02-03",
+      "end": "2025-02-07",
+      "status": "Not Started",
+      "description": "Update MED routine. Decide on alcohol rule (e.g., weekends only)."
+    },
+    {
+      "id": "H-FEB-02",
+      "category": "Health",
+      "title": "Research Stem Cell Treatments for joint repair",
+      "start": "2025-02-10",
+      "end": "2025-02-28",
+      "status": "Not Started",
+      "description": "Compile 3-5 clinics (Vietnam & global). Compare to sclerotherapy."
+    },
+    {
+      "id": "T-FEB-01",
+      "category": "Travel",
+      "title": "Book 7-day Health Retreat (Yoga/Wellness)",
+      "start": "2025-02-10",
+      "end": "2025-02-28",
+      "status": "Not Started",
+      "description": "Target dates: April or May. Deposit paid."
+    },
+    {
+      "id": "B-FEB-01",
+      "category": "Business",
+      "title": "Build AI Orchestration POC: 'Hello World' pipeline in chosen tool",
+      "start": "2025-02-01",
+      "end": "2025-02-14",
+      "status": "Not Started",
+      "description": "Pipeline runs in cloud, triggers on simple event."
+    }
+  ]
 }

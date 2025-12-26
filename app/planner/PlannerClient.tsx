@@ -4,7 +4,7 @@ import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { Card, Title, Text, Grid } from '@tremor/react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const localizer = momentLocalizer(moment);
 
@@ -24,15 +24,28 @@ export default function PlannerClient(props: {
     yearly: string[];
     monthly: string;
     weekly: string;
-    daily: string[];
+    daily: { date: string; title: string; action: string; durationMinutes: number }[];
   };
 }) {
   const { todayTitle, weekTheme, defaultAction, timeboxMinutes, events, goals } = props;
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [dailyGoals, setDailyGoals] = useState<string[]>(goals.daily.map((goal) => goal.action));
 
   const handleSelectDate = (date: Date) => {
-    setSelectedDate(date.toISOString().split('T')[0]);
+    const formattedDate = date.toISOString().split('T')[0];
+    setSelectedDate(formattedDate);
   };
+
+  useEffect(() => {
+    if (selectedDate) {
+      const matchedGoal = props.goals.daily.find((task) => task.date === selectedDate);
+      if (matchedGoal) {
+        setDailyGoals([matchedGoal.action]);
+      } else {
+        setDailyGoals([defaultAction]);
+      }
+    }
+  }, [selectedDate, props.goals.daily, defaultAction]);
 
   return (
     <main className="p-6 flex">
@@ -51,7 +64,7 @@ export default function PlannerClient(props: {
           <Text className="text-sm">{goals.weekly}</Text>
           <Text className="mt-4 font-bold">Daily Tasks</Text>
           <ul>
-            {goals.daily.map((task, index) => (
+            {dailyGoals.map((task, index) => (
               <li key={index} className="text-sm">{task}</li>
             ))}
           </ul>
