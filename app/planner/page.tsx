@@ -1,31 +1,29 @@
 import PlannerClient from './PlannerClient';
 import plan from '../../state/plan.json';
 
-function parseEvents(dailyTasks: Record<string, string[]>) {
+function parseEvents(dailyTasks: { date: string; title: string; action: string; durationMinutes: number }[]) {
   const events: { title: string; start: Date; end: Date }[] = [];
-  for (const [date, tasks] of Object.entries(dailyTasks || {})) {
-    tasks.forEach((task: string) => {
-      events.push({
-        title: task,
-        start: new Date(date),
-        end: new Date(date),
-      });
+  for (const task of dailyTasks || []) {
+    events.push({
+      title: task.title,
+      start: new Date(task.date),
+      end: new Date(task.date),
     });
   }
   return events;
 }
 
 export default function PlannerPage() {
-  const todayTitle = plan.current_week?.theme || "";
-  const weekTheme = plan.current_week?.theme || "";
-  const defaultAction = plan.current_week?.default_action || "";
-  const timeboxMinutes = plan.current_week?.timebox_minutes || 30;
-  const events = parseEvents(plan.daily_tasks);
+  const todayTitle = plan.goals.weekly?.title || "";
+  const weekTheme = plan.goals.weekly?.title || "";
+  const defaultAction = plan.goals.weekly?.defaultAction || "";
+  const timeboxMinutes = 30; // Default value
+  const events = parseEvents(plan.goals.daily);
   const goals = {
-    yearly: plan.yearly_goals?.map((goal) => goal.goal) || [],
-    monthly: plan.monthly_goals?.["2026-01"] || "",
-    weekly: plan.weekly_goals?.["2026-W01"] || "",
-    daily: plan.daily_tasks?.["2026-01-05"] || [],
+    yearly: plan.goals.yearly || [],
+    monthly: plan.goals.monthly?.title || "",
+    weekly: plan.goals.weekly?.title || "",
+    daily: plan.goals.daily || [],
   };
 
   return (
