@@ -1,40 +1,102 @@
+'use client';
+
+import { useMemo, useState } from 'react';
 import PlannerClient from './PlannerClient';
 import plan from '../../state/plan.json';
 
-function parseEvents(dailyTasks: { date: string; title: string; action: string; durationMinutes: number }[]) {
-  const events: { title: string; start: Date; end: Date }[] = [];
+type DailyTask = {
+  date: string;
+  title: string;
+  action: string;
+  durationMinutes: number;
+};
+
+type PlannerEvent = {
+  title: string;
+  start: Date;
+  end: Date;
+};
+
+function toDateKey(date: Date) {
+  return date.toISOString().split('T')[0];
+}
+
+function parseEvents(dailyTasks: DailyTask[], timedEvents: { title: string; start: string; end: string }[]) {
+  const events: PlannerEvent[] = [];
+
   for (const task of dailyTasks || []) {
     events.push({
-      title: task.title,
+      title: task.title || task.action,
       start: new Date(task.date),
       end: new Date(task.date),
     });
   }
+
+  for (const event of timedEvents || []) {
+    events.push({
+      title: event.title,
+      start: new Date(event.start),
+      end: new Date(event.end),
+    });
+  }
+
   return events;
 }
 
+function getWeekRange(date: Date) {
+  const start = new Date(date);
+  start.setHours(0, 0, 0, 0);
+  start.setDate(start.getDate() - start.getDay());
+
+  const end = new Date(start);
+  end.setDate(end.getDate() + 6);
+  end.setHours(23, 59, 59, 999);
+
+  return { start, end };
+}
+
 export default function PlannerPage() {
-  const todayTitle = plan.goals.weekly?.title || "";
-  const weekTheme = plan.goals.weekly?.title || "";
-  const defaultAction = plan.goals.weekly?.defaultAction || "";
-  const timeboxMinutes = 30; // Default value
-  const events = parseEvents(plan.goals.daily);
-  const goals = {
-    yearly: plan.goals.yearly || [],
-    monthly: plan.goals.monthly?.title || "",
-    weekly: plan.goals.weekly?.title || "",
-    daily: plan.goals.daily || [],
-  };
+  const [selectedDate, setSelectedDate] = useState(new Date());
+
+  const dailyTasks = (plan?.goals?.daily || []) as DailyTask[];
+  const yearlyGoals = (plan?.goals?.yearly || []) as string[];
+
+  const selectedDateKey = useMemo(() => toDateKey(selectedDate), [selectedDate]);
+  const weekRange = useMemo(() => getWeekRange(selectedDate), [selectedDate]);
+
+  const todayTasks = useMemo(
+    () =>
+      dailyTasks
+        .filter((task) => task.date === selectedDateKey)
+        .map((task) => task.title || task.action),
+    [dailyTasks, selectedDateKey]
+  );
+
+  const weekTasks = useMemo(
+    () =>
+      dailyTasks
+        .filter((task) => {
+          const taskDate = new Date(task.date);
+          return taskDate >= weekRange.start && taskDate <= weekRange.end;
+        })
+        .map((task) => task.title || task.action),
+    [dailyTasks, weekRange]
+  );
+
+  const events = useMemo(
+    () => parseEvents(dailyTasks, plan?.events || []),
+    [dailyTasks]
+  );
 
   return (
     <main className="p-4 md:p-10 mx-auto max-w-7xl">
       <PlannerClient
-        todayTitle={todayTitle}
-        weekTheme={weekTheme}
-        defaultAction={defaultAction}
-        timeboxMinutes={timeboxMinutes}
+        selectedDate={selectedDateKey}
         events={events}
-        goals={goals}
+        todayTasks={todayTasks}
+        weekTasks={weekTasks}
+        yearlyGoals={yearlyGoals}
+        onSelectDate={setSelectedDate}
       />
     </main>
   );
