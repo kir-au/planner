@@ -49,11 +49,8 @@ export default function PlannerClient(props: {
 
   return (
     <main className="p-6 flex">
-      <aside
-        className="w-1/4 p-4 border-r flex flex-col justify-between"
-        style={{ marginTop: 'calc(var(--top-cards-height, 200px))', maxHeight: 'calc(100vh - var(--top-cards-height, 200px))', overflow: 'auto' }}
-      >
-        <Card>
+      <aside className="w-1/4 p-4 border-r self-start">
+        <Card className="mt-[0px]">
           <Title>Goals</Title>
           <Text className="mt-2 font-bold">Yearly Goals</Text>
           <ul>
@@ -75,40 +72,42 @@ export default function PlannerClient(props: {
       </aside>
 
       <section className="flex-1">
-        <Grid numItemsSm={1} numItemsLg={3} className="gap-6 mb-6">
-          <Card>
-            <Title>Today</Title>
-            <Text className="mt-2">{todayTitle}</Text>
-            <Text className="mt-2 text-sm opacity-80">{timeboxMinutes} minutes</Text>
-          </Card>
+        <div className="pt-0">
+          <Grid numItemsSm={1} numItemsLg={3} className="gap-6 mb-6">
+            <Card>
+              <Title>Today</Title>
+              <Text className="mt-2">{todayTitle}</Text>
+              <Text className="mt-2 text-sm opacity-80">{timeboxMinutes} minutes</Text>
+            </Card>
+
+            <Card>
+              <Title>This week</Title>
+              <Text className="mt-2">{weekTheme}</Text>
+              <Text className="mt-2 text-sm opacity-80">Default: {defaultAction}</Text>
+            </Card>
+
+            <Card>
+              <Title>Rule</Title>
+              <Text className="mt-2">One default action per day. No daily planning.</Text>
+            </Card>
+          </Grid>
 
           <Card>
-            <Title>This week</Title>
-            <Text className="mt-2">{weekTheme}</Text>
-            <Text className="mt-2 text-sm opacity-80">Default: {defaultAction}</Text>
+            <Title>Calendar</Title>
+            <div className="mt-4" style={{ height: 600 }}>
+              <Calendar
+                localizer={localizer}
+                events={events}
+                startAccessor="start"
+                endAccessor="end"
+                views={['month', 'week', 'day', 'agenda']}
+                style={{ height: 600 }}
+                onSelectSlot={(slotInfo) => handleSelectDate(slotInfo.start)}
+                selectable
+              />
+            </div>
           </Card>
-
-          <Card>
-            <Title>Rule</Title>
-            <Text className="mt-2">One default action per day. No daily planning.</Text>
-          </Card>
-        </Grid>
-
-        <Card>
-          <Title>Calendar</Title>
-          <div className="mt-4" style={{ height: 600 }}>
-            <Calendar
-              localizer={localizer}
-              events={events}
-              startAccessor="start"
-              endAccessor="end"
-              views={['month', 'week', 'day', 'agenda']}
-              style={{ height: 600 }}
-              onSelectSlot={(slotInfo) => handleSelectDate(slotInfo.start)}
-              selectable
-            />
-          </div>
-        </Card>
+        </div>
       </section>
     </main>
   );
