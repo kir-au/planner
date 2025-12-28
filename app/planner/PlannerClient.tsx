@@ -49,23 +49,47 @@ export default function PlannerClient(props: {
 
   return (
     <main className="p-6 flex">
-      <aside className="w-1/4 p-4 border-r self-start">
-        <Card className="mt-[0px]">
-          <Title>Goals</Title>
-          <Text className="mt-2 font-bold">Yearly Goals</Text>
+      <aside className="w-1/4 p-4 border-r flex flex-col">
+        <Card>
+          <Title>Execution Panel</Title>
+          <Text className="mt-2 font-bold">Today</Text>
           <ul>
-            {goals.yearly.map((goal, index) => (
-              <li key={index} className="text-sm">{goal}</li>
-            ))}
+            {props.events
+              .filter((event) => {
+                const selectedDateObj = selectedDate ? new Date(selectedDate) : new Date();
+                return (
+                  new Date(event.start) <= selectedDateObj &&
+                  selectedDateObj <= new Date(event.end)
+                );
+              })
+              .map((event, index) => (
+                <li key={index} className="text-sm">{event.title}</li>
+              ))}
           </ul>
-          <Text className="mt-4 font-bold">Monthly Goal</Text>
-          <Text className="text-sm">{goals.monthly}</Text>
-          <Text className="mt-4 font-bold">Weekly Goal</Text>
-          <Text className="text-sm">{goals.weekly}</Text>
-          <Text className="mt-4 font-bold">Daily Tasks</Text>
+
+          <Text className="mt-4 font-bold">This Week</Text>
           <ul>
-            {dailyGoals.map((task, index) => (
-              <li key={index} className="text-sm">{task}</li>
+            {props.events
+              .filter((event) => {
+                const selectedDateObj = selectedDate ? new Date(selectedDate) : new Date();
+                const weekStart = new Date(selectedDateObj);
+                weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+                const weekEnd = new Date(weekStart);
+                weekEnd.setDate(weekEnd.getDate() + 6);
+                return (
+                  new Date(event.start) <= weekEnd &&
+                  weekStart <= new Date(event.end)
+                );
+              })
+              .map((event, index) => (
+                <li key={index} className="text-sm">{event.title}</li>
+              ))}
+          </ul>
+
+          <Text className="mt-4 font-bold">This Year</Text>
+          <ul>
+            {props.goals.yearly.map((goal, index) => (
+              <li key={index} className="text-sm">{goal}</li>
             ))}
           </ul>
         </Card>
@@ -76,19 +100,17 @@ export default function PlannerClient(props: {
           <Grid numItemsSm={1} numItemsLg={3} className="gap-6 mb-6">
             <Card>
               <Title>Today</Title>
-              <Text className="mt-2">{todayTitle}</Text>
-              <Text className="mt-2 text-sm opacity-80">{timeboxMinutes} minutes</Text>
+              <Text className="mt-2">Tasks for selected date</Text>
             </Card>
 
             <Card>
-              <Title>This week</Title>
-              <Text className="mt-2">{weekTheme}</Text>
-              <Text className="mt-2 text-sm opacity-80">Default: {defaultAction}</Text>
+              <Title>This Week</Title>
+              <Text className="mt-2">Tasks overlapping selected week</Text>
             </Card>
 
             <Card>
-              <Title>Rule</Title>
-              <Text className="mt-2">One default action per day. No daily planning.</Text>
+              <Title>This Year</Title>
+              <Text className="mt-2">Yearly context</Text>
             </Card>
           </Grid>
 
