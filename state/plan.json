@@ -22,14 +22,56 @@
     "daily": [
       {
         "date": "2025-12-28",
-        "title": "Set up planner skeleton",
-        "action": "Open repo, verify calendar + plan.json wiring",
+        "title": "Set up planner repository and baseline UI",
+        "action": "Verify calendar → execution panel wiring",
         "durationMinutes": 30
       },
       {
         "date": "2025-12-29",
-        "title": "Daily execution loop",
-        "action": "Refine daily task rendering",
+        "title": "Implement execution panel rendering for selected day",
+        "action": "Render empty state for days without tasks",
+        "durationMinutes": 30
+      },
+      {
+        "date": "2025-12-30",
+        "title": "Implement week aggregation logic",
+        "action": "Verify ISO week calculation",
+        "durationMinutes": 30
+      },
+      {
+        "date": "2025-12-31",
+        "title": "Clean UI alignment and spacing",
+        "action": "Remove unused components",
+        "durationMinutes": 30
+      },
+      {
+        "date": "2026-01-01",
+        "title": "Define January execution theme",
+        "action": "Review yearly goals alignment",
+        "durationMinutes": 30
+      },
+      {
+        "date": "2026-01-02",
+        "title": "Refine daily task rendering",
+        "action": "Ensure calendar click updates execution panel",
+        "durationMinutes": 30
+      },
+      {
+        "date": "2026-01-03",
+        "title": "Add visual distinction for today vs selected date",
+        "action": "Polish execution panel UX",
+        "durationMinutes": 30
+      },
+      {
+        "date": "2026-01-04",
+        "title": "Stability pass: no new features",
+        "action": "Verify planner flow end-to-end",
+        "durationMinutes": 30
+      },
+      {
+        "date": "2026-01-05",
+        "title": "Begin Planner MVP iteration loop",
+        "action": "Capture feedback from real usage",
         "durationMinutes": 30
       }
     ]
