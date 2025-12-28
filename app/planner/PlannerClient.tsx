@@ -22,30 +22,8 @@ export default function PlannerClient(props: {
   onSelectDate: (date: Date) => void;
 }) {
   return (
-    <div className="max-w-7xl mx-auto px-6">
-      <header className="flex items-center justify-between px-6 py-4 border-b">
-        <div className="flex items-center">
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            aria-hidden="true"
-          >
-            <rect x="3.5" y="5.5" width="17" height="15" rx="3" />
-            <path d="M7 3.75V7" strokeLinecap="round" />
-            <path d="M17 3.75V7" strokeLinecap="round" />
-            <path d="M3.5 9.5H20.5" strokeLinecap="round" />
-            <path d="M8.2 15.2L10.4 17.4L15.8 12" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </div>
-        <span className="text-sm text-gray-500">Planner</span>
-      </header>
-
-      <div className="grid grid-cols-3 gap-4 mb-6">
+    <div className="w-full">
+      <div className="grid grid-cols-1 gap-4 mb-6 md:grid-cols-3">
         <Card>
           <Title>Today</Title>
           <Text className="mt-2">{`${props.todayTasks?.length || 0} tasks`}</Text>
@@ -62,7 +40,7 @@ export default function PlannerClient(props: {
         </Card>
       </div>
 
-      <div className="grid grid-cols-[320px_1fr] gap-6 items-stretch">
+      <div className="grid grid-cols-1 gap-6 items-stretch lg:grid-cols-[320px_1fr]">
         <aside className="flex">
           <Card className="w-full h-full flex flex-col">
             <Title>Execution Panel</Title>
@@ -88,33 +66,35 @@ export default function PlannerClient(props: {
           </Card>
         </aside>
 
-        <Card className="flex flex-col">
+        <Card className="flex flex-col min-w-0">
           <Title>Calendar</Title>
-          <div className="mt-4 h-[600px]">
-            <Calendar
-              localizer={localizer}
-              events={props.events.map((event) => ({
-                ...event,
-                title: event.title.length > 32 ? `${event.title.slice(0, 32)}…` : event.title,
-              }))}
-              startAccessor="start"
-              endAccessor="end"
-              views={['month', 'week', 'day', 'agenda']}
-              style={{ height: '100%' }}
-              selectable
-              popup
-              longPressThreshold={10}
-              onSelectSlot={(slotInfo) => {
-                if (slotInfo?.start) {
-                  props.onSelectDate(new Date(slotInfo.start));
-                }
-              }}
-              onSelectEvent={(event) => {
-                if (event?.start) {
-                  props.onSelectDate(new Date(event.start));
-                }
-              }}
-            />
+          <div className="mt-4 overflow-x-auto">
+            <div className="min-w-[720px] h-[600px]">
+              <Calendar
+                localizer={localizer}
+                events={props.events.map((event) => ({
+                  ...event,
+                  title: event.title.length > 32 ? `${event.title.slice(0, 32)}…` : event.title,
+                }))}
+                startAccessor="start"
+                endAccessor="end"
+                views={['month', 'week', 'day', 'agenda']}
+                style={{ height: '100%' }}
+                selectable
+                popup
+                longPressThreshold={10}
+                onSelectSlot={(slotInfo) => {
+                  if (slotInfo?.start) {
+                    props.onSelectDate(new Date(slotInfo.start));
+                  }
+                }}
+                onSelectEvent={(event) => {
+                  if (event?.start) {
+                    props.onSelectDate(new Date(event.start));
+                  }
+                }}
+              />
+            </div>
           </div>
         </Card>
       </div>
