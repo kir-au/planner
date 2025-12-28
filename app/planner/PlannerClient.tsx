@@ -48,8 +48,15 @@ export default function PlannerClient(props: {
   }, [selectedDate, props.goals.daily, defaultAction]);
 
   return (
-    <main className="p-6 flex">
-      <aside className="w-1/4 p-4 border-r flex flex-col justify-between">
+    <main
+      className="p-6 grid"
+      style={{
+        gridTemplateColumns: '1fr 3fr',
+        gridTemplateRows: 'auto 1fr',
+        height: '100vh',
+      }}
+    >
+      <aside className="p-4 border-r flex flex-col justify-between" style={{ gridRow: '1 / span 2' }}>
         <Card>
           <Title>Goals</Title>
           <Text className="mt-2 font-bold">Yearly Goals</Text>
@@ -71,7 +78,7 @@ export default function PlannerClient(props: {
         </Card>
       </aside>
 
-      <section className="flex-1">
+      <section className="flex flex-col" style={{ gridRow: '1' }}>
         <Grid numItemsSm={1} numItemsLg={3} className="gap-6 mb-6">
           <Card>
             <Title>Today</Title>
@@ -90,17 +97,19 @@ export default function PlannerClient(props: {
             <Text className="mt-2">One default action per day. No daily planning.</Text>
           </Card>
         </Grid>
+      </section>
 
+      <section style={{ gridRow: '2', height: '100%' }}>
         <Card>
           <Title>Calendar</Title>
-          <div className="mt-4" style={{ height: 520 }}>
+          <div className="mt-4" style={{ height: '100%' }}>
             <Calendar
               localizer={localizer}
               events={events}
               startAccessor="start"
               endAccessor="end"
               views={['month', 'week', 'day', 'agenda']}
-              style={{ height: 520 }}
+              style={{ height: '100%' }}
               onSelectSlot={(slotInfo) => handleSelectDate(slotInfo.start)}
               selectable
             />
