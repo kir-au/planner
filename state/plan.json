@@ -21,13 +21,13 @@
     },
     "daily": [
       {
-        "date": "2026-01-01",
+        "date": "2025-12-28",
         "title": "Set up planner skeleton",
         "action": "Open repo, verify calendar + plan.json wiring",
         "durationMinutes": 30
       },
       {
-        "date": "2026-01-02",
+        "date": "2025-12-29",
         "title": "Daily execution loop",
         "action": "Refine daily task rendering",
         "durationMinutes": 30
@@ -37,8 +37,8 @@
   "events": [
     {
       "title": "Planner focus block",
-      "start": "2026-01-01T09:00:00",
-      "end": "2026-01-01T09:30:00"
+      "start": "2025-12-28T09:00:00",
+      "end": "2025-12-28T09:30:00"
     }
   ],
   "tasks": [
@@ -46,8 +46,8 @@
       "id": "H-JAN-01",
       "category": "Health",
       "title": "Start 4HB Experiment: Dry Jan + 30g protein breakfast",
-      "start": "2025-01-01",
-      "end": "2025-01-31",
+      "start": "2025-12-28",
+      "end": "2026-01-26",
       "status": "Not Started",
       "description": "Log data daily in tracker. Success: ≥26 dry days."
     },
@@ -55,8 +55,8 @@
       "id": "H-JAN-02",
       "category": "Health",
       "title": "Japan Ski Prep: Test knee brace, pack meds",
-      "start": "2025-01-20",
-      "end": "2025-01-24",
+      "start": "2026-01-27",
+      "end": "2026-01-31",
       "status": "Not Started",
       "description": "Pack list complete, pain management plan set."
     },
@@ -64,8 +64,8 @@
       "id": "T-JAN-01",
       "category": "Travel",
       "title": "Japan Trip: Ski & observe body response",
-      "start": "2025-01-25",
-      "end": "2025-02-02",
+      "start": "2026-02-01",
+      "end": "2026-02-09",
       "status": "Not Started",
       "description": "Goal: Ski 3 days with pain <5/10. Track sleep."
     },
@@ -73,8 +73,8 @@
       "id": "B-JAN-01",
       "category": "Business",
       "title": "Research cloud AI orchestration tools (AWS Step Functions vs. Prefect)",
-      "start": "2025-01-06",
-      "end": "2025-01-10",
+      "start": "2026-02-10",
+      "end": "2026-02-14",
       "status": "Not Started",
       "description": "Document pros/cons. Choose one for POC."
     },
@@ -82,8 +82,8 @@
       "id": "H-FEB-01",
       "category": "Health",
       "title": "Post-Japan Analysis: Adjust protocol based on data",
-      "start": "2025-02-03",
-      "end": "2025-02-07",
+      "start": "2026-02-15",
+      "end": "2026-02-19",
       "status": "Not Started",
       "description": "Update MED routine. Decide on alcohol rule (e.g., weekends only)."
     },
@@ -91,8 +91,8 @@
       "id": "H-FEB-02",
       "category": "Health",
       "title": "Research Stem Cell Treatments for joint repair",
-      "start": "2025-02-10",
-      "end": "2025-02-28",
+      "start": "2026-02-20",
+      "end": "2026-03-09",
       "status": "Not Started",
       "description": "Compile 3-5 clinics (Vietnam & global). Compare to sclerotherapy."
     },
@@ -100,8 +100,8 @@
       "id": "T-FEB-01",
       "category": "Travel",
       "title": "Book 7-day Health Retreat (Yoga/Wellness)",
-      "start": "2025-02-10",
-      "end": "2025-02-28",
+      "start": "2026-03-10",
+      "end": "2026-03-28",
       "status": "Not Started",
       "description": "Target dates: April or May. Deposit paid."
     },
@@ -109,8 +109,8 @@
       "id": "B-FEB-01",
       "category": "Business",
       "title": "Build AI Orchestration POC: 'Hello World' pipeline in chosen tool",
-      "start": "2025-02-01",
-      "end": "2025-02-14",
+      "start": "2026-03-01",
+      "end": "2026-03-14",
       "status": "Not Started",
       "description": "Pipeline runs in cloud, triggers on simple event."
     }

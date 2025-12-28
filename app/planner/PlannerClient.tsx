@@ -49,7 +49,7 @@ export default function PlannerClient(props: {
 
   return (
     <main className="p-6 flex">
-      <aside className="w-1/4 p-4 border-r">
+      <aside className="w-1/4 p-4 border-r flex flex-col justify-between">
         <Card>
           <Title>Goals</Title>
           <Text className="mt-2 font-bold">Yearly Goals</Text>
