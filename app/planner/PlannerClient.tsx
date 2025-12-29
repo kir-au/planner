@@ -13,56 +13,64 @@ export type PlannerEvent = {
   end: Date;
 };
 
+type SummaryPanel = {
+  title: string;
+  count: number;
+  description?: string;
+};
+
+type ExecutionSection = {
+  title: string;
+  tasks: string[];
+};
+
 export default function PlannerClient(props: {
-  selectedDate: string;
+  selectedDate: Date;
   events: PlannerEvent[];
-  todayTasks: string[];
-  weekTasks: string[];
-  yearlyGoals: string[];
+  summaryPanels: SummaryPanel[];
+  executionSections: ExecutionSection[];
   onSelectDate: (date: Date) => void;
 }) {
+  const formatCount = (count: number) => `${count} task${count === 1 ? '' : 's'}`;
+  const isSameDay = (a: Date, b: Date) =>
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate();
+
   return (
     <div className="w-full">
-      <div className="grid grid-cols-1 gap-4 mb-6 md:grid-cols-3">
-        <Card>
-          <Title>Today</Title>
-          <Text className="mt-2">{`${props.todayTasks?.length || 0} tasks`}</Text>
-        </Card>
-
-        <Card>
-          <Title>This Week</Title>
-          <Text className="mt-2">{`${props.weekTasks?.length || 0} tasks`}</Text>
-        </Card>
-
-        <Card>
-          <Title>This Year</Title>
-          <Text className="mt-2">Yearly goals summary</Text>
-        </Card>
+      <div className="grid grid-cols-1 gap-4 mb-6 md:grid-cols-2 xl:grid-cols-4">
+        {props.summaryPanels.map((panel) => (
+          <Card key={panel.title}>
+            <Title>{panel.title}</Title>
+            <Text className="mt-2">{formatCount(panel.count)}</Text>
+            {panel.description ? (
+              <Text className="mt-2 text-sm opacity-80">{panel.description}</Text>
+            ) : null}
+          </Card>
+        ))}
       </div>
 
       <div className="grid grid-cols-1 gap-6 items-stretch lg:grid-cols-[320px_1fr]">
         <aside className="flex">
           <Card className="w-full h-full flex flex-col">
             <Title>Execution Panel</Title>
-            <Text className="mt-2">Today</Text>
-            <ul className="text-sm space-y-1">
-              {props.todayTasks?.slice(0, 6).map((task, index) => (
-                <li key={index} className="truncate text-gray-700">{task}</li>
-              ))}
-              {props.todayTasks?.length > 6 && (
-                <li className="text-sm text-gray-500">… +{props.todayTasks.length - 6} more</li>
-              )}
-            </ul>
-
-            <Text className="mt-4">This Week</Text>
-            <ul className="text-sm space-y-1">
-              {props.weekTasks?.slice(0, 6).map((task, index) => (
-                <li key={index} className="truncate text-gray-700">{task}</li>
-              ))}
-              {props.weekTasks?.length > 6 && (
-                <li className="text-sm text-gray-500">… +{props.weekTasks.length - 6} more</li>
-              )}
-            </ul>
+            {props.executionSections.map((section) => (
+              <div key={section.title} className="mt-3 first:mt-2">
+                <Text>{section.title}</Text>
+                <ul className="text-sm space-y-1 mt-1">
+                  {section.tasks.length === 0 ? (
+                    <li className="text-gray-500">No tasks scheduled</li>
+                  ) : (
+                    section.tasks.map((task, index) => (
+                      <li key={`${section.title}-${index}`} className="text-gray-700 break-words">
+                        {task}
+                      </li>
+                    ))
+                  )}
+                </ul>
+              </div>
+            ))}
           </Card>
         </aside>
 
@@ -79,10 +87,17 @@ export default function PlannerClient(props: {
                 startAccessor="start"
                 endAccessor="end"
                 views={['month', 'week', 'day', 'agenda']}
+                date={props.selectedDate}
                 style={{ height: '100%' }}
                 selectable
                 popup
                 longPressThreshold={10}
+                onNavigate={(date) => props.onSelectDate(date)}
+                dayPropGetter={(date) =>
+                  isSameDay(date, props.selectedDate)
+                    ? { style: { backgroundColor: 'rgb(219 234 254)' } }
+                    : {}
+                }
                 onSelectSlot={(slotInfo) => {
                   if (slotInfo?.start) {
                     props.onSelectDate(new Date(slotInfo.start));
