@@ -17,12 +17,21 @@ type SummaryPanel = {
   title: string;
   count: number;
   description?: string;
-  tasks: { title: string; isDefault: boolean }[];
+  tasks: ExecutionTask[];
 };
 
 type ExecutionSection = {
   title: string;
-  tasks: { title: string; isDefault: boolean }[];
+  tasks: ExecutionTask[];
+};
+
+type ExecutionTask = {
+  title: string;
+  isDefault: boolean;
+  hasTime?: boolean;
+  start?: Date;
+  end?: Date;
+  sortIndex?: number;
 };
 
 export default function PlannerClient(props: {
@@ -37,6 +46,8 @@ export default function PlannerClient(props: {
     a.getFullYear() === b.getFullYear() &&
     a.getMonth() === b.getMonth() &&
     a.getDate() === b.getDate();
+  const formatTime = (date: Date) =>
+    date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false });
 
   return (
     <div className="w-full">
@@ -75,17 +86,43 @@ export default function PlannerClient(props: {
               <div key={section.title} className="mt-3 first:mt-2">
                 <Text>{section.title}</Text>
                 <ul className="text-sm space-y-1 mt-1">
-                  {section.tasks.map((task, index) => {
-                    const label = task.isDefault ? `Default: ${task.title}` : task.title;
-                    return (
-                      <li
-                        key={`${section.title}-${index}`}
-                        className={task.isDefault ? 'text-gray-500 whitespace-nowrap' : 'text-gray-700 break-words'}
-                      >
-                        {label}
-                      </li>
-                    );
-                  })}
+                  {section.tasks.length === 0 ? (
+                    <li className="text-gray-500">No tasks scheduled</li>
+                  ) : (
+                    [...section.tasks]
+                      .sort((a, b) => {
+                        const aTimed = Boolean(a.hasTime);
+                        const bTimed = Boolean(b.hasTime);
+                        if (aTimed !== bTimed) {
+                          return aTimed ? -1 : 1;
+                        }
+                        if (!aTimed && !bTimed) {
+                          return (a.sortIndex ?? 0) - (b.sortIndex ?? 0);
+                        }
+                        const aTime = a.start ? a.start.getHours() * 60 + a.start.getMinutes() : Number.MAX_SAFE_INTEGER;
+                        const bTime = b.start ? b.start.getHours() * 60 + b.start.getMinutes() : Number.MAX_SAFE_INTEGER;
+                        if (aTime !== bTime) {
+                          return aTime - bTime;
+                        }
+                        return (a.sortIndex ?? 0) - (b.sortIndex ?? 0);
+                      })
+                      .map((task, index) => {
+                        const timeLabel =
+                          task.hasTime && task.start && task.end
+                            ? `${formatTime(task.start)}–${formatTime(task.end)}`
+                            : null;
+                        const label = task.isDefault ? `Default: ${task.title}` : task.title;
+                        const content = timeLabel ? `${timeLabel} · ${label}` : label;
+                        return (
+                          <li
+                            key={`${section.title}-${index}`}
+                            className={task.isDefault ? 'text-gray-500 whitespace-nowrap' : 'text-gray-700 break-words'}
+                          >
+                            {content}
+                          </li>
+                        );
+                      })
+                  )}
                 </ul>
               </div>
             ))}

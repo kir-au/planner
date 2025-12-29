@@ -103,6 +103,36 @@
       "title": "Planner focus block",
       "start": "2025-12-28T09:00:00",
       "end": "2025-12-28T09:30:00"
+    },
+    {
+      "title": "Party",
+      "start": "2025-12-30T15:00:00+11:00",
+      "end": "2025-12-30T21:00:00+11:00",
+      "category": "Social",
+      "type": "Event"
+    },
+    {
+      "title": "Catch up with friends",
+      "start": "2025-12-30T21:00:00+11:00",
+      "end": "2025-12-30T23:00:00+11:00",
+      "category": "Social",
+      "type": "Event"
+    },
+    {
+      "title": "New Year’s Eve Boat Party – Sydney Harbour",
+      "start": "2025-12-31T17:30:00+11:00",
+      "end": "2025-12-31T23:59:00+11:00",
+      "category": "Social",
+      "type": "Event",
+      "notes": "Boat party, NYE on Sydney Harbour"
+    },
+    {
+      "title": "Family Camping Trip",
+      "start": "2026-01-01T08:00:00+11:00",
+      "end": "2026-01-05T20:00:00+11:00",
+      "category": "Family",
+      "type": "Event",
+      "isMultiDay": true
     }
   ],
   "tasks": [

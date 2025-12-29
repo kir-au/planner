@@ -8,11 +8,22 @@ type PlannerTask = {
   id: string;
   title: string;
   date: string;
+  category?: string;
   duration?: number;
   tags?: string[];
   weekTheme?: string;
   start?: string;
   end?: string;
+};
+
+type PlannerEventItem = {
+  title: string;
+  start: string;
+  end: string;
+  category?: string;
+  type?: string;
+  notes?: string;
+  isMultiDay?: boolean;
 };
 
 type DefaultConfig = {
@@ -29,12 +40,25 @@ type PlannerDefaults = {
 type ExecutionTask = {
   title: string;
   isDefault: boolean;
+  hasTime?: boolean;
+  start?: Date;
+  end?: Date;
+  sortIndex?: number;
 };
 
 type PlannerEvent = {
   title: string;
   start: Date;
   end: Date;
+};
+
+type PlannerItem = {
+  title: string;
+  start: Date;
+  end: Date;
+  source: 'task' | 'event';
+  hasTime: boolean;
+  sortIndex: number;
 };
 
 type TimedEvent = {
@@ -144,8 +168,38 @@ function tasksInRange(tasks: PlannerTask[], range: { start: Date; end: Date }) {
   });
 }
 
+function itemsInRange(items: PlannerItem[], range: { start: Date; end: Date }) {
+  return items.filter((item) => item.start < range.end && item.end > range.start);
+}
+
 function getWeekTheme(tasks: PlannerTask[]) {
   return tasks.find((task) => task.weekTheme)?.weekTheme;
+}
+
+function toPlannerItemFromTask(task: PlannerTask, sortIndex: number): PlannerItem {
+  const startValue = task.start || task.date;
+  const endValue = task.end || task.date;
+  const hasTime = startValue.includes('T') || endValue.includes('T');
+  return {
+    title: task.title,
+    start: parseDateBoundary(startValue, false),
+    end: parseDateBoundary(endValue, true),
+    source: 'task',
+    hasTime,
+    sortIndex,
+  };
+}
+
+function toPlannerItemFromEvent(event: PlannerEventItem, sortIndex: number): PlannerItem {
+  const hasTime = event.start.includes('T') || event.end.includes('T');
+  return {
+    title: event.title,
+    start: parseDateBoundary(event.start, false),
+    end: parseDateBoundary(event.end, true),
+    source: 'event',
+    hasTime,
+    sortIndex,
+  };
 }
 
 function resolveDefaultTitle(defaults: PlannerDefaults | undefined) {
@@ -160,12 +214,16 @@ function normalizeDefaultTitle(title: string) {
   return title.replace(/^Default:\s*/i, '');
 }
 
-function buildExecutionTasks(tasks: PlannerTask[], dateKey: string, defaultTitle: string): ExecutionTask[] {
+function buildExecutionTasks(items: PlannerItem[], dateKey: string, defaultTitle: string): ExecutionTask[] {
   const dayStart = parseDateBoundary(dateKey, false);
   const dayEnd = parseDateBoundary(dateKey, true);
-  const explicitTasks = tasksInRange(tasks, { start: dayStart, end: dayEnd }).map((task) => ({
-    title: task.title,
+  const explicitTasks = itemsInRange(items, { start: dayStart, end: dayEnd }).map((item) => ({
+    title: item.title,
     isDefault: false,
+    hasTime: item.hasTime,
+    start: item.start,
+    end: item.end,
+    sortIndex: item.sortIndex,
   }));
 
   if (explicitTasks.length > 0) {
@@ -175,9 +233,16 @@ function buildExecutionTasks(tasks: PlannerTask[], dateKey: string, defaultTitle
   return [{ title: normalizeDefaultTitle(defaultTitle), isDefault: true }];
 }
 
-function buildSummaryTasks(explicitTasks: PlannerTask[], defaultTitle: string): ExecutionTask[] {
+function buildSummaryTasks(explicitTasks: PlannerItem[], defaultTitle: string): ExecutionTask[] {
   if (explicitTasks.length > 0) {
-    return explicitTasks.map((task) => ({ title: task.title, isDefault: false }));
+    return explicitTasks.map((task) => ({
+      title: task.title,
+      isDefault: false,
+      hasTime: task.hasTime,
+      start: task.start,
+      end: task.end,
+      sortIndex: task.sortIndex,
+    }));
   }
 
   return [{ title: normalizeDefaultTitle(defaultTitle), isDefault: true }];
@@ -187,6 +252,7 @@ export default function PlannerPage() {
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   const tasks = (plan?.tasks || []) as PlannerTask[];
+  const events = (plan?.events || []) as PlannerEventItem[];
   const defaults = plan?.defaults as PlannerDefaults | undefined;
   const selectedDateKey = useMemo(() => formatDateKey(selectedDate), [selectedDate]);
   const defaultTitle = useMemo(() => resolveDefaultTitle(defaults), [defaults]);
@@ -195,38 +261,46 @@ export default function PlannerPage() {
     () => tasks.filter((task) => Boolean(task.date)),
     [tasks]
   );
+  const plannerItems = useMemo(() => {
+    const taskItems = tasksWithDates.map((task, index) => toPlannerItemFromTask(task, index));
+    const eventItems = events.map((event, index) => toPlannerItemFromEvent(event, index + taskItems.length));
+    return [...taskItems, ...eventItems];
+  }, [events, tasksWithDates]);
 
   const todayKey = selectedDateKey;
   const tomorrowKey = useMemo(() => formatDateKey(addDays(selectedDate, 1)), [selectedDate]);
   const dayAfterKey = useMemo(() => formatDateKey(addDays(selectedDate, 2)), [selectedDate]);
 
   const todayTasks = useMemo(
-    () => buildExecutionTasks(tasksWithDates, todayKey, defaultTitle),
-    [tasksWithDates, todayKey, defaultTitle]
+    () => buildExecutionTasks(plannerItems, todayKey, defaultTitle),
+    [plannerItems, todayKey, defaultTitle]
   );
   const tomorrowTasks = useMemo(
-    () => buildExecutionTasks(tasksWithDates, tomorrowKey, defaultTitle),
-    [tasksWithDates, tomorrowKey, defaultTitle]
+    () => buildExecutionTasks(plannerItems, tomorrowKey, defaultTitle),
+    [plannerItems, tomorrowKey, defaultTitle]
   );
   const dayAfterTasks = useMemo(
-    () => buildExecutionTasks(tasksWithDates, dayAfterKey, defaultTitle),
-    [tasksWithDates, dayAfterKey, defaultTitle]
+    () => buildExecutionTasks(plannerItems, dayAfterKey, defaultTitle),
+    [plannerItems, dayAfterKey, defaultTitle]
   );
 
   const thisWeekRange = useMemo(() => getIsoWeekRange(selectedDate), [selectedDate]);
   const nextWeekRange = useMemo(() => shiftRange(thisWeekRange, 7), [thisWeekRange]);
   const weekAfterRange = useMemo(() => shiftRange(thisWeekRange, 14), [thisWeekRange]);
 
-  const thisWeekTasks = useMemo(() => tasksInRange(tasksWithDates, thisWeekRange), [tasksWithDates, thisWeekRange]);
-  const nextWeekTasks = useMemo(() => tasksInRange(tasksWithDates, nextWeekRange), [tasksWithDates, nextWeekRange]);
-  const weekAfterTasks = useMemo(() => tasksInRange(tasksWithDates, weekAfterRange), [tasksWithDates, weekAfterRange]);
+  const thisWeekTasks = useMemo(() => itemsInRange(plannerItems, thisWeekRange), [plannerItems, thisWeekRange]);
+  const nextWeekTasks = useMemo(() => itemsInRange(plannerItems, nextWeekRange), [plannerItems, nextWeekRange]);
+  const weekAfterTasks = useMemo(() => itemsInRange(plannerItems, weekAfterRange), [plannerItems, weekAfterRange]);
+  const thisWeekTaskEntries = useMemo(() => tasksInRange(tasksWithDates, thisWeekRange), [tasksWithDates, thisWeekRange]);
+  const nextWeekTaskEntries = useMemo(() => tasksInRange(tasksWithDates, nextWeekRange), [tasksWithDates, nextWeekRange]);
+  const weekAfterTaskEntries = useMemo(() => tasksInRange(tasksWithDates, weekAfterRange), [tasksWithDates, weekAfterRange]);
 
-  const thisWeekTheme = plan?.goals?.weekly?.title || defaults?.weekly?.title || getWeekTheme(thisWeekTasks);
-  const nextWeekTheme = getWeekTheme(nextWeekTasks);
-  const weekAfterTheme = getWeekTheme(weekAfterTasks);
+  const thisWeekTheme = plan?.goals?.weekly?.title || defaults?.weekly?.title || getWeekTheme(thisWeekTaskEntries);
+  const nextWeekTheme = getWeekTheme(nextWeekTaskEntries);
+  const weekAfterTheme = getWeekTheme(weekAfterTaskEntries);
 
   const monthRange = useMemo(() => getMonthRange(selectedDate), [selectedDate]);
-  const monthTasks = useMemo(() => tasksInRange(tasksWithDates, monthRange), [tasksWithDates, monthRange]);
+  const monthTasks = useMemo(() => itemsInRange(plannerItems, monthRange), [plannerItems, monthRange]);
 
   const thisWeekPanelTasks = useMemo(
     () => buildSummaryTasks(thisWeekTasks, defaultTitle),
@@ -271,13 +345,30 @@ export default function PlannerPage() {
     },
   ];
 
+  const systemToday = useMemo(() => {
+    const now = new Date();
+    return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  }, []);
+  const isTodayContext = useMemo(() => formatDateKey(selectedDate) === formatDateKey(systemToday), [selectedDate, systemToday]);
+  const formatLabel = (date: Date) =>
+    date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+
   const executionSections = [
-    { title: 'Today', tasks: todayTasks },
-    { title: 'Tomorrow', tasks: tomorrowTasks },
-    { title: 'Day After Tomorrow', tasks: dayAfterTasks },
+    {
+      title: isTodayContext ? 'Today' : formatLabel(selectedDate),
+      tasks: todayTasks,
+    },
+    {
+      title: isTodayContext ? 'Tomorrow' : formatLabel(addDays(selectedDate, 1)),
+      tasks: tomorrowTasks,
+    },
+    {
+      title: isTodayContext ? 'Day After Tomorrow' : formatLabel(addDays(selectedDate, 2)),
+      tasks: dayAfterTasks,
+    },
   ];
 
-  const events = useMemo(
+  const calendarEvents = useMemo(
     () => parseEvents(tasksWithDates, plan?.events || []),
     [tasksWithDates]
   );
@@ -329,7 +420,7 @@ export default function PlannerPage() {
     <main className="w-full px-6 py-4 md:py-10">
       <PlannerClient
         selectedDate={selectedDate}
-        events={events}
+        events={calendarEvents}
         summaryPanels={summaryPanels}
         executionSections={executionSections}
         onSelectDate={setSelectedDate}
