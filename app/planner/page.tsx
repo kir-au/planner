@@ -51,6 +51,8 @@ type PlannerEvent = {
   title: string;
   start: Date;
   end: Date;
+  category?: string;
+  hasTime?: boolean;
 };
 
 type PlannerItem = {
@@ -139,10 +141,13 @@ function parseEvents(tasks: PlannerTask[], timedEvents: TimedEvent[]) {
   for (const task of tasks || []) {
     const startValue = task.start || task.date;
     const endValue = task.end || task.date;
+    const hasTime = startValue.includes('T') || endValue.includes('T');
     events.push({
       title: task.title,
       start: parseDateValue(startValue),
       end: parseDateValue(endValue),
+      category: task.category,
+      hasTime,
     });
   }
 
@@ -151,6 +156,8 @@ function parseEvents(tasks: PlannerTask[], timedEvents: TimedEvent[]) {
       title: event.title,
       start: new Date(event.start),
       end: new Date(event.end),
+      category: event.category,
+      hasTime: event.start.includes('T') || event.end.includes('T'),
     });
   }
 
@@ -235,7 +242,7 @@ function buildExecutionTasks(items: PlannerItem[], dateKey: string, defaultTitle
     return explicitTasks;
   }
 
-  return [{ title: normalizeDefaultTitle(defaultTitle), isDefault: true }];
+  return [{ title: normalizeDefaultTitle(defaultTitle), isDefault: true, category: 'default' }];
 }
 
 function buildSummaryTasks(explicitTasks: PlannerItem[], defaultTitle: string): ExecutionTask[] {
@@ -251,7 +258,7 @@ function buildSummaryTasks(explicitTasks: PlannerItem[], defaultTitle: string): 
     }));
   }
 
-  return [{ title: normalizeDefaultTitle(defaultTitle), isDefault: true }];
+  return [{ title: normalizeDefaultTitle(defaultTitle), isDefault: true, category: 'default' }];
 }
 
 export default function PlannerPage() {
