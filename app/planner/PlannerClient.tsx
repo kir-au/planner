@@ -17,11 +17,12 @@ type SummaryPanel = {
   title: string;
   count: number;
   description?: string;
+  tasks: { title: string; isDefault: boolean }[];
 };
 
 type ExecutionSection = {
   title: string;
-  tasks: string[];
+  tasks: { title: string; isDefault: boolean }[];
 };
 
 export default function PlannerClient(props: {
@@ -41,12 +42,27 @@ export default function PlannerClient(props: {
     <div className="w-full">
       <div className="grid grid-cols-1 gap-4 mb-6 md:grid-cols-2 xl:grid-cols-4">
         {props.summaryPanels.map((panel) => (
-          <Card key={panel.title}>
+          <Card key={panel.title} className="flex flex-col">
             <Title>{panel.title}</Title>
             <Text className="mt-2">{formatCount(panel.count)}</Text>
             {panel.description ? (
               <Text className="mt-2 text-sm opacity-80">{panel.description}</Text>
             ) : null}
+            <div className="mt-3 max-h-28 overflow-y-auto">
+              <ul className="text-sm space-y-1 pr-1">
+                {panel.tasks.map((task, index) => {
+                  const label = task.isDefault ? `Default: ${task.title}` : task.title;
+                  return (
+                    <li
+                      key={`${panel.title}-${index}`}
+                      className={task.isDefault ? 'text-gray-500 whitespace-nowrap' : 'text-gray-700 break-words'}
+                    >
+                      {label}
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
           </Card>
         ))}
       </div>
@@ -59,15 +75,17 @@ export default function PlannerClient(props: {
               <div key={section.title} className="mt-3 first:mt-2">
                 <Text>{section.title}</Text>
                 <ul className="text-sm space-y-1 mt-1">
-                  {section.tasks.length === 0 ? (
-                    <li className="text-gray-500">No tasks scheduled</li>
-                  ) : (
-                    section.tasks.map((task, index) => (
-                      <li key={`${section.title}-${index}`} className="text-gray-700 break-words">
-                        {task}
+                  {section.tasks.map((task, index) => {
+                    const label = task.isDefault ? `Default: ${task.title}` : task.title;
+                    return (
+                      <li
+                        key={`${section.title}-${index}`}
+                        className={task.isDefault ? 'text-gray-500 whitespace-nowrap' : 'text-gray-700 break-words'}
+                      >
+                        {label}
                       </li>
-                    ))
-                  )}
+                    );
+                  })}
                 </ul>
               </div>
             ))}
