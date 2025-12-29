@@ -44,6 +44,7 @@ type ExecutionTask = {
   start?: Date;
   end?: Date;
   sortIndex?: number;
+  category?: string;
 };
 
 type PlannerEvent = {
@@ -59,6 +60,7 @@ type PlannerItem = {
   source: 'task' | 'event';
   hasTime: boolean;
   sortIndex: number;
+  category?: string;
 };
 
 type TimedEvent = {
@@ -187,6 +189,7 @@ function toPlannerItemFromTask(task: PlannerTask, sortIndex: number): PlannerIte
     source: 'task',
     hasTime,
     sortIndex,
+    category: task.category,
   };
 }
 
@@ -199,6 +202,7 @@ function toPlannerItemFromEvent(event: PlannerEventItem, sortIndex: number): Pla
     source: 'event',
     hasTime,
     sortIndex,
+    category: event.category,
   };
 }
 
@@ -224,6 +228,7 @@ function buildExecutionTasks(items: PlannerItem[], dateKey: string, defaultTitle
     start: item.start,
     end: item.end,
     sortIndex: item.sortIndex,
+    category: item.category,
   }));
 
   if (explicitTasks.length > 0) {
@@ -242,6 +247,7 @@ function buildSummaryTasks(explicitTasks: PlannerItem[], defaultTitle: string): 
       start: task.start,
       end: task.end,
       sortIndex: task.sortIndex,
+      category: task.category,
     }));
   }
 
@@ -329,13 +335,11 @@ export default function PlannerPage() {
     {
       title: 'Next Week',
       count: nextWeekTasks.length,
-      description: nextWeekTheme || undefined,
       tasks: nextWeekPanelTasks,
     },
     {
       title: 'Week After',
       count: weekAfterTasks.length,
-      description: weekAfterTheme || undefined,
       tasks: weekAfterPanelTasks,
     },
     {

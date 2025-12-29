@@ -32,6 +32,7 @@ type ExecutionTask = {
   start?: Date;
   end?: Date;
   sortIndex?: number;
+  category?: string;
 };
 
 export default function PlannerClient(props: {
@@ -48,6 +49,22 @@ export default function PlannerClient(props: {
     a.getDate() === b.getDate();
   const formatTime = (date: Date) =>
     date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false });
+  const categoryClass = (category?: string) => {
+    if (!category) {
+      return '';
+    }
+    const normalized = category.toLowerCase();
+    if (normalized.includes('health')) {
+      return 'border-emerald-300';
+    }
+    if (normalized.includes('family')) {
+      return 'border-amber-300';
+    }
+    if (normalized.includes('business') || normalized.includes('work')) {
+      return 'border-sky-300';
+    }
+    return 'border-gray-200';
+  };
 
   return (
     <div className="w-full">
@@ -55,18 +72,22 @@ export default function PlannerClient(props: {
         {props.summaryPanels.map((panel) => (
           <Card key={panel.title} className="flex flex-col">
             <Title>{panel.title}</Title>
-            <Text className="mt-2">{formatCount(panel.count)}</Text>
+            <Text className="mt-2 text-[15px]">{formatCount(panel.count)}</Text>
             {panel.description ? (
-              <Text className="mt-2 text-sm opacity-80">{panel.description}</Text>
+              <Text className="mt-2 text-[14px] text-gray-500">{panel.description}</Text>
             ) : null}
             <div className="mt-3 max-h-28 overflow-y-auto">
-              <ul className="text-sm space-y-1 pr-1">
+              <ul className="text-[15px] leading-snug space-y-0.5 pr-1">
                 {panel.tasks.map((task, index) => {
                   const label = task.isDefault ? `Default: ${task.title}` : task.title;
+                  const indicator = categoryClass(task.category);
                   return (
                     <li
                       key={`${panel.title}-${index}`}
-                      className={task.isDefault ? 'text-gray-500 whitespace-nowrap' : 'text-gray-700 break-words'}
+                      className={[
+                        task.isDefault ? 'text-gray-400 italic whitespace-nowrap' : 'text-gray-700 break-words',
+                        indicator ? `border-l-2 pl-2 ${indicator}` : '',
+                      ].join(' ')}
                     >
                       {label}
                     </li>
@@ -80,12 +101,12 @@ export default function PlannerClient(props: {
 
       <div className="grid grid-cols-1 gap-6 items-stretch lg:grid-cols-[320px_1fr]">
         <aside className="flex">
-          <Card className="w-full h-full flex flex-col">
+          <Card className="w-full h-full flex flex-col border border-gray-200 shadow-sm">
             <Title>Execution Panel</Title>
             {props.executionSections.map((section) => (
-              <div key={section.title} className="mt-3 first:mt-2">
-                <Text>{section.title}</Text>
-                <ul className="text-sm space-y-1 mt-1">
+              <div key={section.title} className="mt-4 first:mt-3">
+                <Text className="text-[15px] font-semibold text-gray-800">{section.title}</Text>
+                <ul className="text-[15px] leading-snug space-y-0.5 mt-2">
                   {section.tasks.length === 0 ? (
                     <li className="text-gray-500">No tasks scheduled</li>
                   ) : (
@@ -111,14 +132,24 @@ export default function PlannerClient(props: {
                           task.hasTime && task.start && task.end
                             ? `${formatTime(task.start)}–${formatTime(task.end)}`
                             : null;
+                        const indicator = categoryClass(task.category);
                         const label = task.isDefault ? `Default: ${task.title}` : task.title;
-                        const content = timeLabel ? `${timeLabel} · ${label}` : label;
                         return (
                           <li
                             key={`${section.title}-${index}`}
-                            className={task.isDefault ? 'text-gray-500 whitespace-nowrap' : 'text-gray-700 break-words'}
+                            className={[
+                              task.isDefault ? 'text-gray-400 italic whitespace-nowrap' : 'text-gray-700 break-words',
+                              indicator ? `border-l-2 pl-2 ${indicator}` : '',
+                            ].join(' ')}
                           >
-                            {content}
+                            {timeLabel ? (
+                              <>
+                                <span className="font-semibold">{timeLabel}</span>
+                                <span>{` · ${label}`}</span>
+                              </>
+                            ) : (
+                              label
+                            )}
                           </li>
                         );
                       })
@@ -129,7 +160,7 @@ export default function PlannerClient(props: {
           </Card>
         </aside>
 
-        <Card className="flex flex-col min-w-0">
+        <Card className="flex flex-col min-w-0 border border-gray-100 shadow-none">
           <Title>Calendar</Title>
           <div className="mt-4 overflow-x-auto">
             <div className="min-w-[720px] h-[600px]">
