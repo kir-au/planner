@@ -69,6 +69,7 @@ type TimedEvent = {
   title: string;
   start: string;
   end: string;
+  category?: string;
 };
 
 function formatDateKey(date: Date) {

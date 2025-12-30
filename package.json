@@ -3,7 +3,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "__NEXT_PRIVATE_STANDALONE_CONFIG= next build",
     "start": "next start",
     "lint": "next lint"
   },

@@ -4,6 +4,7 @@ import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { Card, Title, Text } from '@tremor/react';
+import { useEffect, useState } from 'react';
 
 const localizer = momentLocalizer(moment);
 
@@ -76,6 +77,7 @@ const CATEGORY_COLORS = {
 };
 
 type CategoryKey = keyof typeof CATEGORY_COLORS;
+type CalendarView = 'month' | 'week' | 'day' | 'agenda';
 
 function applyAlpha(hex: string, alpha: number) {
   const normalized = hex.replace('#', '');
@@ -112,6 +114,17 @@ export default function PlannerClient(props: {
   executionSections: ExecutionSection[];
   onSelectDate: (date: Date) => void;
 }) {
+  const [calendarView, setCalendarView] = useState<CalendarView>('month');
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+    const mediaQuery = window.matchMedia('(max-width: 767px)');
+    if (mediaQuery.matches) {
+      setCalendarView('week');
+    }
+  }, []);
   const formatCount = (count: number) => `${count} task${count === 1 ? '' : 's'}`;
   const isSameDay = (a: Date, b: Date) =>
     a.getFullYear() === b.getFullYear() &&
@@ -159,41 +172,9 @@ export default function PlannerClient(props: {
   ];
 
   return (
-    <div className="w-full">
-      <div className="grid grid-cols-1 gap-4 mb-6 md:grid-cols-2 xl:grid-cols-4">
-        {props.summaryPanels.map((panel) => (
-          <Card key={panel.title} className="flex flex-col">
-            <Title>{panel.title}</Title>
-            <Text className="mt-2 text-[15px]">{formatCount(panel.count)}</Text>
-            {panel.description ? (
-              <Text className="mt-2 text-[14px] text-gray-500">{panel.description}</Text>
-            ) : null}
-            <div className="mt-3 max-h-28 overflow-y-auto">
-              <ul className="text-[15px] leading-[1.4] pr-1 divide-y divide-gray-100">
-                {panel.tasks.map((task, index) => {
-                  const label = task.isDefault ? `Default: ${task.title}` : task.title;
-                  const colors = getCategoryColors(task.category, task.isDefault, task.hasTime);
-                  return (
-                    <li
-                      key={`${panel.title}-${index}`}
-                      className={[
-                        task.isDefault ? 'text-gray-400 italic whitespace-nowrap' : 'text-gray-700 break-words',
-                        'py-0.5 flex items-start',
-                      ].join(' ')}
-                    >
-                      <CategoryDot color={colors.border} />
-                      <span>{label}</span>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          </Card>
-        ))}
-      </div>
-
-      <div className="grid grid-cols-1 gap-6 items-stretch lg:grid-cols-[320px_1fr]">
-        <aside className="flex">
+    <div className="w-full flex flex-col gap-6">
+      <div className="order-1 lg:order-2 grid grid-cols-1 gap-6 items-stretch lg:grid-cols-[320px_1fr]">
+        <aside className="order-1 lg:order-none flex">
           <Card className="w-full h-full flex flex-col border border-gray-200 shadow-sm">
             <Title>Execution Panel</Title>
             {props.executionSections.map((section) => (
@@ -254,41 +235,43 @@ export default function PlannerClient(props: {
           </Card>
         </aside>
 
-        <Card className="flex flex-col min-w-0 border border-gray-100 shadow-none">
+        <Card className="order-2 lg:order-none flex flex-col min-w-0 border border-gray-100 shadow-none">
           <Title>Calendar</Title>
-          <div className="mt-4 overflow-x-auto">
-            <div className="min-w-[720px] h-[600px]">
-            <Calendar
-              localizer={localizer}
-              events={props.events.map((event) => ({
-                ...event,
-                title: event.title.length > 32 ? `${event.title.slice(0, 32)}…` : event.title,
-              }))}
-              startAccessor="start"
-              endAccessor="end"
-              views={['month', 'week', 'day', 'agenda']}
-              date={props.selectedDate}
-              style={{ height: '100%' }}
-              selectable
-              popup
-              longPressThreshold={10}
-              onNavigate={(date) => props.onSelectDate(date)}
-              eventPropGetter={(event) => {
-                const colors = getCategoryColors(event.category, false, event.hasTime);
-                return {
-                  style: {
-                    backgroundColor: colors.bg,
-                    border: `1px solid ${colors.border}`,
-                    color: colors.text,
-                    borderRadius: '6px',
-                  },
-                };
-              }}
-              dayPropGetter={(date) =>
-                isSameDay(date, props.selectedDate)
-                  ? { style: { backgroundColor: 'rgb(219 234 254)' } }
-                  : {}
-              }
+          <div className="mt-4 overflow-x-hidden md:overflow-visible">
+            <div className="min-w-full h-[520px] md:min-w-[720px] md:h-[600px]">
+              <Calendar
+                localizer={localizer}
+                events={props.events.map((event) => ({
+                  ...event,
+                  title: event.title.length > 32 ? `${event.title.slice(0, 32)}…` : event.title,
+                }))}
+                startAccessor="start"
+                endAccessor="end"
+                views={['month', 'week', 'day', 'agenda']}
+                view={calendarView}
+                onView={(view) => setCalendarView(view as CalendarView)}
+                date={props.selectedDate}
+                style={{ height: '100%' }}
+                selectable
+                popup
+                longPressThreshold={10}
+                onNavigate={(date) => props.onSelectDate(date)}
+                eventPropGetter={(event) => {
+                  const colors = getCategoryColors(event.category, false, event.hasTime);
+                  return {
+                    style: {
+                      backgroundColor: colors.bg,
+                      border: `1px solid ${colors.border}`,
+                      color: colors.text,
+                      borderRadius: '6px',
+                    },
+                  };
+                }}
+                dayPropGetter={(date) =>
+                  isSameDay(date, props.selectedDate)
+                    ? { style: { backgroundColor: 'rgb(219 234 254)' } }
+                    : {}
+                }
                 onSelectSlot={(slotInfo) => {
                   if (slotInfo?.start) {
                     props.onSelectDate(new Date(slotInfo.start));
@@ -305,7 +288,7 @@ export default function PlannerClient(props: {
         </Card>
       </div>
 
-      <div className="mt-6 flex flex-wrap items-start gap-3 text-[13px] text-gray-500 leading-[1.4]">
+      <div className="order-2 lg:order-3 flex flex-wrap items-start gap-3 text-[13px] text-gray-500 leading-[1.4]">
         {legendItems.map((item) => {
           const colors = CATEGORY_COLORS[item.key];
           return (
@@ -315,6 +298,38 @@ export default function PlannerClient(props: {
             </div>
           );
         })}
+      </div>
+
+      <div className="order-3 lg:order-1 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+        {props.summaryPanels.map((panel) => (
+          <Card key={panel.title} className="flex flex-col">
+            <Title>{panel.title}</Title>
+            <Text className="mt-2 text-[15px]">{formatCount(panel.count)}</Text>
+            {panel.description ? (
+              <Text className="mt-2 text-[14px] text-gray-500">{panel.description}</Text>
+            ) : null}
+            <div className="mt-3 max-h-28 overflow-y-auto">
+              <ul className="text-[15px] leading-[1.4] pr-1 divide-y divide-gray-100">
+                {panel.tasks.map((task, index) => {
+                  const label = task.isDefault ? `Default: ${task.title}` : task.title;
+                  const colors = getCategoryColors(task.category, task.isDefault, task.hasTime);
+                  return (
+                    <li
+                      key={`${panel.title}-${index}`}
+                      className={[
+                        task.isDefault ? 'text-gray-400 italic whitespace-nowrap' : 'text-gray-700 break-words',
+                        'py-0.5 flex items-start',
+                      ].join(' ')}
+                    >
+                      <CategoryDot color={colors.border} />
+                      <span>{label}</span>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          </Card>
+        ))}
       </div>
     </div>
   );
