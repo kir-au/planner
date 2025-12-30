@@ -77,6 +77,34 @@ const CATEGORY_COLORS = {
 
 type CategoryKey = keyof typeof CATEGORY_COLORS;
 
+function applyAlpha(hex: string, alpha: number) {
+  const normalized = hex.replace('#', '');
+  const value = normalized.length === 3
+    ? normalized
+        .split('')
+        .map((char) => char + char)
+        .join('')
+    : normalized;
+  const int = parseInt(value, 16);
+  const r = (int >> 16) & 255;
+  const g = (int >> 8) & 255;
+  const b = int & 255;
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+function CategoryDot({ color }: { color: string }) {
+  return (
+    <span
+      className="h-[6px] w-[6px] rounded-full mr-2 shrink-0"
+      style={{
+        backgroundColor: applyAlpha(color, 0.85),
+        transform: 'translateY(calc(0.7em - 3px))',
+      }}
+      aria-hidden="true"
+    />
+  );
+}
+
 export default function PlannerClient(props: {
   selectedDate: Date;
   events: PlannerEvent[];
@@ -141,7 +169,7 @@ export default function PlannerClient(props: {
               <Text className="mt-2 text-[14px] text-gray-500">{panel.description}</Text>
             ) : null}
             <div className="mt-3 max-h-28 overflow-y-auto">
-              <ul className="text-[15px] leading-snug pr-1 divide-y divide-gray-100">
+              <ul className="text-[15px] leading-[1.4] pr-1 divide-y divide-gray-100">
                 {panel.tasks.map((task, index) => {
                   const label = task.isDefault ? `Default: ${task.title}` : task.title;
                   const colors = getCategoryColors(task.category, task.isDefault, task.hasTime);
@@ -150,11 +178,11 @@ export default function PlannerClient(props: {
                       key={`${panel.title}-${index}`}
                       className={[
                         task.isDefault ? 'text-gray-400 italic whitespace-nowrap' : 'text-gray-700 break-words',
-                        'border-l-2 pl-2 py-0.5',
+                        'py-0.5 flex items-start',
                       ].join(' ')}
-                      style={{ borderLeftColor: colors.border }}
                     >
-                      {label}
+                      <CategoryDot color={colors.border} />
+                      <span>{label}</span>
                     </li>
                   );
                 })}
@@ -164,21 +192,6 @@ export default function PlannerClient(props: {
         ))}
       </div>
 
-      <div className="mb-6 flex flex-wrap items-center gap-3 text-[13px] text-gray-500">
-        {legendItems.map((item) => {
-          const colors = CATEGORY_COLORS[item.key];
-          return (
-            <div key={item.key} className="inline-flex items-center gap-2">
-              <span
-                className="h-2.5 w-2.5 rounded-sm border"
-                style={{ backgroundColor: colors.bg, borderColor: colors.border }}
-              />
-              <span>{item.label}</span>
-            </div>
-          );
-        })}
-      </div>
-
       <div className="grid grid-cols-1 gap-6 items-stretch lg:grid-cols-[320px_1fr]">
         <aside className="flex">
           <Card className="w-full h-full flex flex-col border border-gray-200 shadow-sm">
@@ -186,7 +199,7 @@ export default function PlannerClient(props: {
             {props.executionSections.map((section) => (
               <div key={section.title} className="mt-4 first:mt-3">
                 <Text className="text-[15px] font-semibold text-gray-800">{section.title}</Text>
-                <ul className="text-[15px] leading-snug mt-2 divide-y divide-gray-100">
+                <ul className="text-[15px] leading-[1.4] mt-2 divide-y divide-gray-100">
                   {section.tasks.length === 0 ? (
                     <li className="text-gray-500">No tasks scheduled</li>
                   ) : (
@@ -219,17 +232,17 @@ export default function PlannerClient(props: {
                             key={`${section.title}-${index}`}
                             className={[
                               task.isDefault ? 'text-gray-400 italic whitespace-nowrap' : 'text-gray-700 break-words',
-                              'border-l-2 pl-2 py-1',
+                              'py-1 flex items-start',
                             ].join(' ')}
-                            style={{ borderLeftColor: colors.border }}
                           >
+                            <CategoryDot color={colors.border} />
                             {timeLabel ? (
-                              <>
+                              <span>
                                 <span className="font-semibold">{timeLabel}</span>
                                 <span className="font-normal">{` · ${label}`}</span>
-                              </>
+                              </span>
                             ) : (
-                              label
+                              <span>{label}</span>
                             )}
                           </li>
                         );
@@ -290,6 +303,18 @@ export default function PlannerClient(props: {
             </div>
           </div>
         </Card>
+      </div>
+
+      <div className="mt-6 flex flex-wrap items-start gap-3 text-[13px] text-gray-500 leading-[1.4]">
+        {legendItems.map((item) => {
+          const colors = CATEGORY_COLORS[item.key];
+          return (
+            <div key={item.key} className="inline-flex items-start">
+              <CategoryDot color={colors.border} />
+              <span>{item.label}</span>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
