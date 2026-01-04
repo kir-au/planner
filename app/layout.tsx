@@ -3,6 +3,7 @@ import './globals.css';
 import { Analytics } from '@vercel/analytics/react';
 import { Suspense } from 'react';
 import ProvidersWrapper from './providers-wrapper'
+import AddTaskControl from './components/AddTaskControl';
 
 export const metadata = {
   title: 'CubCar',
@@ -43,7 +44,9 @@ export default async function RootLayout({
                   <path d="M8.2 15.2L10.4 17.4L15.8 12" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </a>
-              <nav className="flex items-center gap-4" />
+              <nav className="flex items-center gap-3">
+                <AddTaskControl />
+              </nav>
             </div>
           </header>
         </Suspense>
